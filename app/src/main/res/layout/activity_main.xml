@@ -11,21 +11,23 @@
                   android:orientation="vertical" tools:ignore="MissingConstraints">
 
         <TextView android:id="@+id/version"
-                android:layout_width="match_parent"
+                  android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:text="版本:"
-                  android:textSize="24dp"/>
+                  android:textSize="24dp"
+                  android:textStyle="bold"/>
 
         <TextView android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:text="此软件为免费开源软件仅供学习交流"
                   android:textSize="12dp"/>
+        <Button android:id="@+id/saveCert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="保存证书"/>
         <TextView android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:text="启动后用浏览器访问Host:Port下载证书"/>
-        <TextView android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="设置WIFI代理"/>
+                  android:text="①安装证书②启动③设置WIFI代理"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -48,7 +50,11 @@
             </Button>
         </LinearLayout>
 
-
+        <CheckBox
+                android:id="@+id/outError"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="输出错误日志"/>
         <LinearLayout android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:orientation="horizontal">
@@ -108,7 +114,7 @@
                 app:layout_constraintTop_toTopOf="parent" tools:layout_editor_absoluteX="0dp">
             <ScrollView
                     android:id="@+id/logScroll"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent" tools:ignore="MissingConstraints">
                 <TextView
                         android:id="@+id/log"

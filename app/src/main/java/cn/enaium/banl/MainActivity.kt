@@ -10,34 +10,33 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.monkeywie.proxyee.crt.CertUtil
 import com.github.monkeywie.proxyee.exception.HttpProxyExceptionHandle
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptInitializer
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptPipeline
-import com.github.monkeywie.proxyee.intercept.common.CertDownIntercept
 import com.github.monkeywie.proxyee.intercept.common.FullRequestIntercept
 import com.github.monkeywie.proxyee.intercept.common.FullResponseIntercept
 import com.github.monkeywie.proxyee.server.HttpProxyCACertFactory
 import com.github.monkeywie.proxyee.server.HttpProxyServer
 import com.github.monkeywie.proxyee.server.HttpProxyServerConfig
 import io.netty.buffer.Unpooled
+import io.netty.channel.Channel
 import io.netty.handler.codec.http.FullHttpRequest
 import io.netty.handler.codec.http.FullHttpResponse
 import io.netty.handler.codec.http.HttpRequest
 import io.netty.handler.codec.http.HttpResponse
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.*
 import java.net.URL
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -132,22 +131,52 @@ class MainActivity : AppCompatActivity() {
             openUrl("https://donate.enaium.cn/")
         }
 
+        findViewById<Button>(R.id.clear).setOnClickListener {
+            logText.text = ""
+        }
+
+        findViewById<Button>(R.id.saveCert).setOnClickListener {
+            log("正在保存...")
+            Thread {
+                val fw = FileWriter(File("/storage/emulated/0/ca.crt"))
+                val br = BufferedReader(InputStreamReader(resources.assets.open("ca.crt")))
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    fw.write(line)
+                    fw.write("\n")
+                }
+                fw.close()
+            }.start()
+            log("保存成功(内部储存)")
+        }
+
+        val outError = findViewById<CheckBox>(R.id.outError)
+        outError.isChecked = config.getBoolean("outError", false)
+        outError.setOnCheckedChangeListener { _, selected ->
+            configEdit.putBoolean("outError", selected)
+            configEdit.apply()
+        }
+
         val startButton = findViewById<Button>(R.id.start)
         startButton.setOnClickListener {
             try {
-
                 if (!hostEditText.text.matches(Regex("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"))) {
                     log("请输入有效Host", LogType.ERROR)
                     return@setOnClickListener
                 }
 
-                configEdit.putString("host", hostEditText.text.toString())
-                configEdit.putInt("port", portHostEditText.text.toString().toShort().toInt())//先检测是否为short再转为int
+                val host = hostEditText.text.toString()
+                val port = portHostEditText.text.toString().toShort().toInt()
+
+                configEdit.putString("host", host)
+                configEdit.putInt("port", port)//先检测是否为short再转为int
                 configEdit.apply()
 
                 hostEditText.visibility = View.GONE
                 portHostEditText.visibility = View.GONE
                 startButton.visibility = View.GONE
+
+                log("等待启动中...")
 
                 Thread {
                     val httpProxyServerConfig = HttpProxyServerConfig()
@@ -172,7 +201,6 @@ class MainActivity : AppCompatActivity() {
                         HttpProxyServer()
                             .proxyInterceptInitializer(object : HttpProxyInterceptInitializer() {
                                 override fun init(pipeline: HttpProxyInterceptPipeline) {
-                                    pipeline.addLast(CertDownIntercept(cert))
                                     pipeline.addLast(object : FullRequestIntercept() {
                                         override fun match(
                                             httpRequest: HttpRequest, pipeline: HttpProxyInterceptPipeline
@@ -198,6 +226,7 @@ class MainActivity : AppCompatActivity() {
                                             }
                                         }
                                     })
+
                                     pipeline.addLast(object : FullResponseIntercept() {
                                         override fun match(
                                             httpRequest: HttpRequest,
@@ -220,20 +249,25 @@ class MainActivity : AppCompatActivity() {
                                     })
                                 }
                             }).caCertFactory(cert).httpProxyExceptionHandle(object : HttpProxyExceptionHandle() {
-                                override fun startCatch(e: Throwable) {
-                                    log(e.stackTraceToString(), LogType.ERROR)
+                                override fun beforeCatch(clientChannel: Channel, cause: Throwable) {
+                                    if (outError.isSelected) {
+                                        log(cause.stackTraceToString(), LogType.ERROR)
+                                    }
                                 }
                             }).serverConfig(httpProxyServerConfig)
-                    try {
-                        serverConfig
-                            .start(
-                                hostEditText.text.toString(),
-                                portHostEditText.text.toString().toShort().toInt()
-                            )
-                    } catch (t: Throwable) {
-                        log("启动失败", LogType.ERROR)
-                        log(t.stackTraceToString(), LogType.ERROR)
-                    }
+
+                    serverConfig
+                        .startAsync(
+                            host,
+                            port
+                        ).whenComplete { _, throwable ->
+                            if (throwable != null) {
+                                log("启动失败", LogType.ERROR)
+                                log(throwable.stackTraceToString(), LogType.ERROR)
+                            } else {
+                                log("启动成功 Host:${host} Port:${port}")
+                            }
+                        }
                 }.start()
             } catch (t: Throwable) {
                 log(t.stackTraceToString(), LogType.ERROR)
