@@ -1,5 +1,6 @@
 package cn.enaium.banl
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -17,6 +18,7 @@ import com.github.monkeywie.proxyee.crt.CertUtil
 import com.github.monkeywie.proxyee.exception.HttpProxyExceptionHandle
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptInitializer
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptPipeline
+import com.github.monkeywie.proxyee.intercept.common.CertDownIntercept
 import com.github.monkeywie.proxyee.intercept.common.FullRequestIntercept
 import com.github.monkeywie.proxyee.intercept.common.FullResponseIntercept
 import com.github.monkeywie.proxyee.server.HttpProxyCACertFactory
@@ -24,10 +26,7 @@ import com.github.monkeywie.proxyee.server.HttpProxyServer
 import com.github.monkeywie.proxyee.server.HttpProxyServerConfig
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
-import io.netty.handler.codec.http.FullHttpRequest
-import io.netty.handler.codec.http.FullHttpResponse
-import io.netty.handler.codec.http.HttpRequest
-import io.netty.handler.codec.http.HttpResponse
+import io.netty.handler.codec.http.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -39,45 +38,13 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
 
         val logText = findViewById<TextView>(R.id.log)
-        fun log(msg: String, log: LogType = LogType.INFO) {
-            Thread {
-                runOnUiThread {
-                    val time = "[${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}]"
-
-                    val type = when (log) {
-                        LogType.WARNING -> "[WARNING]"
-                        LogType.ERROR -> "[ERROR]"
-                        else -> "[INFO]"
-                    }
-
-                    val spannableString = SpannableString("$time$type$msg\n")
-                    spannableString.setSpan(
-                        ForegroundColorSpan(
-                            when (log) {
-                                LogType.WARNING -> Color.YELLOW
-                                LogType.ERROR -> Color.RED
-                                else -> Color.GREEN
-                            }
-                        ), time.length, time.length + type.length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-
-                    logText.append(spannableString)
-
-                    val scrollView = findViewById<ScrollView>(R.id.logScroll)
-                    scrollView.post {
-                        scrollView.fullScroll(ScrollView.FOCUS_DOWN)
-                    }
-                }
-            }.start()
-        }
 
         fun openUrl(url: String) {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -111,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 } catch (t: Throwable) {
                     log("检测失败", LogType.ERROR)
-                    log(t.message.toString(), LogType.ERROR)
+                    t.log()
                 }
             }.start()
         }
@@ -133,21 +100,6 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.clear).setOnClickListener {
             logText.text = ""
-        }
-
-        findViewById<Button>(R.id.saveCert).setOnClickListener {
-            log("正在保存...")
-            Thread {
-                val fw = FileWriter(File("/storage/emulated/0/ca.crt"))
-                val br = BufferedReader(InputStreamReader(resources.assets.open("ca.crt")))
-                var line: String?
-                while (br.readLine().also { line = it } != null) {
-                    fw.write(line)
-                    fw.write("\n")
-                }
-                fw.close()
-            }.start()
-            log("保存成功(内部储存)")
         }
 
         val outError = findViewById<CheckBox>(R.id.outError)
@@ -177,7 +129,6 @@ class MainActivity : AppCompatActivity() {
                 startButton.visibility = View.GONE
 
                 log("等待启动中...")
-
                 Thread {
                     val httpProxyServerConfig = HttpProxyServerConfig()
                     httpProxyServerConfig.isHandleSsl = true
@@ -201,12 +152,12 @@ class MainActivity : AppCompatActivity() {
                         HttpProxyServer()
                             .proxyInterceptInitializer(object : HttpProxyInterceptInitializer() {
                                 override fun init(pipeline: HttpProxyInterceptPipeline) {
+                                    pipeline.addLast(CertDownIntercept(cert))
                                     pipeline.addLast(object : FullRequestIntercept() {
                                         override fun match(
                                             httpRequest: HttpRequest, pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
-                                            return httpRequest.uri().endsWith("api/client/login") || httpRequest.uri()
-                                                .endsWith("app/v2/time/heartbeat")
+                                            return httpRequest.endsWith("api/client/login") || httpRequest.endsWith("app/v2/time/heartbeat")
                                         }
 
                                         override fun handleRequest(
@@ -214,14 +165,13 @@ class MainActivity : AppCompatActivity() {
                                             pipeline: HttpProxyInterceptPipeline
                                         ) {
 
-                                            httpRequest.headers().clear()
-                                            httpRequest.content().clear()
+                                            httpRequest.clear()
 
-                                            if (httpRequest.uri().endsWith("api/client/login")) {
+                                            if (httpRequest.endsWith("api/client/login")) {
                                                 log("登录不限制成功")
                                             }
 
-                                            if (httpRequest.uri().endsWith("app/v2/time/heartbeat")) {
+                                            if (httpRequest.endsWith("app/v2/time/heartbeat")) {
                                                 log("时间不计时成功")
                                             }
                                         }
@@ -233,25 +183,30 @@ class MainActivity : AppCompatActivity() {
                                             httpResponse: HttpResponse,
                                             pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
-                                            return httpRequest.uri().endsWith("api/client/can_pay")
+                                            return httpRequest.endsWith("api/client/can_pay") || httpRequest.endsWith("api/client/user.info")
                                         }
 
                                         override fun handleResponse(
                                             httpRequest: HttpRequest,
                                             httpResponse: FullHttpResponse,
-                                            pipeline: HttpProxyInterceptPipeline?
+                                            pipeline: HttpProxyInterceptPipeline
                                         ) {
-                                            httpResponse.content().clear()
-                                            httpResponse.content()
-                                                .writeBytes(Unpooled.wrappedBuffer("""{code":0,"message":"ok","is_adult":1,"server_message":""""".toByteArray()))
-                                            log("充值不限制成功")
+
+                                            if (httpRequest.endsWith("api/client/can_pay")) {
+                                                httpResponse.setContent("""{code":0,"message":"ok","is_adult":1,"server_message":""}""")
+                                                log("充值不限制成功")
+                                            }
+
+                                            if (httpRequest.endsWith("api/client/user.info")) {
+                                                httpResponse.setContent("""{"realname_verified":1,"code":0,"uname":"不限制登录成功"}""")
+                                            }
                                         }
                                     })
                                 }
                             }).caCertFactory(cert).httpProxyExceptionHandle(object : HttpProxyExceptionHandle() {
                                 override fun beforeCatch(clientChannel: Channel, cause: Throwable) {
                                     if (outError.isSelected) {
-                                        log(cause.stackTraceToString(), LogType.ERROR)
+                                        cause.log()
                                     }
                                 }
                             }).serverConfig(httpProxyServerConfig)
@@ -263,15 +218,68 @@ class MainActivity : AppCompatActivity() {
                         ).whenComplete { _, throwable ->
                             if (throwable != null) {
                                 log("启动失败", LogType.ERROR)
-                                log(throwable.stackTraceToString(), LogType.ERROR)
+                                throwable.log()
                             } else {
                                 log("启动成功 Host:${host} Port:${port}")
                             }
                         }
                 }.start()
             } catch (t: Throwable) {
-                log(t.stackTraceToString(), LogType.ERROR)
+                t.log()
             }
         }
+    }
+
+    fun log(msg: String, log: LogType = LogType.INFO) {
+        Thread {
+            runOnUiThread {
+                val time = "[${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}]"
+
+                val type = when (log) {
+                    LogType.WARNING -> "[WARNING]"
+                    LogType.ERROR -> "[ERROR]"
+                    else -> "[INFO]"
+                }
+
+                val spannableString = SpannableString("$time$type$msg\n")
+                spannableString.setSpan(
+                    ForegroundColorSpan(
+                        when (log) {
+                            LogType.WARNING -> Color.YELLOW
+                            LogType.ERROR -> Color.RED
+                            else -> Color.GREEN
+                        }
+                    ), time.length, time.length + type.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                findViewById<TextView>(R.id.log).append(spannableString)
+
+                val scrollView = findViewById<ScrollView>(R.id.logScroll)
+                scrollView.post {
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                }
+            }
+        }.start()
+    }
+
+    fun Throwable.log() {
+        if (cause != null) {
+            log(cause!!.stackTraceToString(), LogType.ERROR)
+        }
+    }
+
+    fun FullHttpRequest.clear() {
+        content().clear()
+        content().clear()
+    }
+
+    fun HttpRequest.endsWith(text: String): Boolean {
+        return uri().endsWith(text)
+    }
+
+    fun FullHttpResponse.setContent(msg: String) {
+        content().clear()
+        content().writeBytes(Unpooled.wrappedBuffer(msg.toByteArray()))
     }
 }

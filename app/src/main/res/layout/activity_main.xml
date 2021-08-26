@@ -21,13 +21,15 @@
                   android:layout_height="wrap_content"
                   android:text="此软件为免费开源软件仅供学习交流"
                   android:textSize="12dp"/>
-        <Button android:id="@+id/saveCert"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="保存证书"/>
+
         <TextView android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:text="①安装证书②启动③设置WIFI代理"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="启动后访问Host:Port下载证书"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
