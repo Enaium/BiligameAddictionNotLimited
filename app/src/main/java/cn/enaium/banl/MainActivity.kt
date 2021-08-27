@@ -1,10 +1,11 @@
 package cn.enaium.banl
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
 import android.text.SpannableString
@@ -12,8 +13,8 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.github.monkeywie.proxyee.crt.CertUtil
 import com.github.monkeywie.proxyee.exception.HttpProxyExceptionHandle
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptInitializer
@@ -29,8 +30,12 @@ import io.netty.channel.Channel
 import io.netty.handler.codec.http.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileWriter
+import java.io.InputStreamReader
 import java.net.URL
+import java.nio.charset.Charset
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
 import java.text.SimpleDateFormat
@@ -102,10 +107,46 @@ class MainActivity : AppCompatActivity() {
             logText.text = ""
         }
 
+
+
+        findViewById<Button>(R.id.saveCert).setOnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    1
+                )
+            }
+
+            log("正在保存...")
+            Thread {
+                val fw = FileWriter(File("/storage/emulated/0/ca.crt"))
+                val br = BufferedReader(InputStreamReader(resources.assets.open("ca.crt")))
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    fw.write(line)
+                    fw.write("\n")
+                }
+                fw.close()
+            }.start()
+            log("保存成功(内部储存)")
+        }
+
         val outError = findViewById<CheckBox>(R.id.outError)
         outError.isChecked = config.getBoolean("outError", false)
         outError.setOnCheckedChangeListener { _, selected ->
             configEdit.putBoolean("outError", selected)
+            configEdit.apply()
+        }
+
+        val outRequestURI = findViewById<CheckBox>(R.id.outRequestURI)
+        outRequestURI.isChecked = config.getBoolean("outRequestURI", false)
+        outRequestURI.setOnCheckedChangeListener { _, selected ->
+            configEdit.putBoolean("outRequestURI", selected)
             configEdit.apply()
         }
 
@@ -152,11 +193,13 @@ class MainActivity : AppCompatActivity() {
                         HttpProxyServer()
                             .proxyInterceptInitializer(object : HttpProxyInterceptInitializer() {
                                 override fun init(pipeline: HttpProxyInterceptPipeline) {
-                                    pipeline.addLast(CertDownIntercept(cert))
                                     pipeline.addLast(object : FullRequestIntercept() {
                                         override fun match(
                                             httpRequest: HttpRequest, pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
+                                            if (outRequestURI.isChecked) {
+                                                log("URI:${httpRequest.uri()}")
+                                            }
                                             return httpRequest.endsWith("api/client/login") || httpRequest.endsWith("app/v2/time/heartbeat")
                                         }
 
@@ -205,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }).caCertFactory(cert).httpProxyExceptionHandle(object : HttpProxyExceptionHandle() {
                                 override fun beforeCatch(clientChannel: Channel, cause: Throwable) {
-                                    if (outError.isSelected) {
+                                    if (outRequestURI.isSelected) {
                                         cause.log()
                                     }
                                 }
