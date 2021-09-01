@@ -29,3 +29,4 @@ B站游戏防沉迷不限制
 
 ![Screenshot_1630501798](https://gitee.com/Enaium/imgbed/raw/master/Screenshot_1630501798.png)
 
+![Screenshot_1630502150](https://gitee.com/Enaium/imgbed/raw/master/Screenshot_1630502150.png)
