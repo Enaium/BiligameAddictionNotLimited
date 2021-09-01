@@ -2,24 +2,30 @@ package cn.enaium.banl
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.StrictMode
+import android.provider.MediaStore
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.github.monkeywie.proxyee.crt.CertUtil
 import com.github.monkeywie.proxyee.exception.HttpProxyExceptionHandle
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptInitializer
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptPipeline
-import com.github.monkeywie.proxyee.intercept.common.CertDownIntercept
 import com.github.monkeywie.proxyee.intercept.common.FullRequestIntercept
 import com.github.monkeywie.proxyee.intercept.common.FullResponseIntercept
 import com.github.monkeywie.proxyee.server.HttpProxyCACertFactory
@@ -27,15 +33,14 @@ import com.github.monkeywie.proxyee.server.HttpProxyServer
 import com.github.monkeywie.proxyee.server.HttpProxyServerConfig
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
-import io.netty.handler.codec.http.*
+import io.netty.handler.codec.http.FullHttpRequest
+import io.netty.handler.codec.http.FullHttpResponse
+import io.netty.handler.codec.http.HttpRequest
+import io.netty.handler.codec.http.HttpResponse
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileWriter
-import java.io.InputStreamReader
+import java.io.*
 import java.net.URL
-import java.nio.charset.Charset
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
 import java.text.SimpleDateFormat
@@ -89,11 +94,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         val config = getSharedPreferences("config", MODE_PRIVATE)
-        val configEdit = config.edit()
-        val hostEditText = findViewById<EditText>(R.id.host)
-        val portHostEditText = findViewById<EditText>(R.id.port)
-        hostEditText.setText(config.getString("host", "127.0.0.1"))
-        portHostEditText.setText(config.getInt("port", 25560).toString())
 
         findViewById<Button>(R.id.github).setOnClickListener {
             openUrl("https://github.com/Enaium")
@@ -106,8 +106,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.clear).setOnClickListener {
             logText.text = ""
         }
-
-
 
         findViewById<Button>(R.id.saveCert).setOnClickListener {
             if (ActivityCompat.checkSelfPermission(
@@ -123,51 +121,47 @@ class MainActivity : AppCompatActivity() {
             }
 
             log("正在保存...")
+
+
+
             Thread {
-                val fw = FileWriter(File("/storage/emulated/0/ca.crt"))
+
+
+                val outputStream = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val values = ContentValues()
+                    values.put(MediaStore.MediaColumns.DISPLAY_NAME, "ca.crt")
+                    values.put(MediaStore.MediaColumns.MIME_TYPE, "application/x-x509-ca-cert")
+                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/ca.crt")
+                    val uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), values)
+                    contentResolver.openOutputStream(uri!!)
+                } else {
+                    FileOutputStream("/storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/ca.crt")
+                }
+
+
                 val br = BufferedReader(InputStreamReader(resources.assets.open("ca.crt")))
                 var line: String?
                 while (br.readLine().also { line = it } != null) {
-                    fw.write(line)
-                    fw.write("\n")
+                    outputStream!!.write(line!!.toByteArray())
+                    outputStream.write("\n".toByteArray())
                 }
-                fw.close()
+                outputStream!!.close()
             }.start()
-            log("保存成功(内部储存)")
+            log("保存成功(系统下载目录)")
         }
 
-        val outError = findViewById<CheckBox>(R.id.outError)
-        outError.isChecked = config.getBoolean("outError", false)
-        outError.setOnCheckedChangeListener { _, selected ->
-            configEdit.putBoolean("outError", selected)
-            configEdit.apply()
-        }
-
-        val outRequestURI = findViewById<CheckBox>(R.id.outRequestURI)
-        outRequestURI.isChecked = config.getBoolean("outRequestURI", false)
-        outRequestURI.setOnCheckedChangeListener { _, selected ->
-            configEdit.putBoolean("outRequestURI", selected)
-            configEdit.apply()
+        findViewById<Button>(R.id.setting).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
 
         val startButton = findViewById<Button>(R.id.start)
         startButton.setOnClickListener {
             try {
-                if (!hostEditText.text.matches(Regex("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"))) {
-                    log("请输入有效Host", LogType.ERROR)
-                    return@setOnClickListener
-                }
 
-                val host = hostEditText.text.toString()
-                val port = portHostEditText.text.toString().toShort().toInt()
+                val host = config.getHost()
+                val port = config.getPort()
 
-                configEdit.putString("host", host)
-                configEdit.putInt("port", port)//先检测是否为short再转为int
-                configEdit.apply()
-
-                hostEditText.visibility = View.GONE
-                portHostEditText.visibility = View.GONE
-                startButton.visibility = View.GONE
+                startButton.visibility = View.INVISIBLE
 
                 log("等待启动中...")
                 Thread {
@@ -197,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                                         override fun match(
                                             httpRequest: HttpRequest, pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
-                                            if (outRequestURI.isChecked) {
+                                            if (config.isOutRequestURI()) {
                                                 log("URI:${httpRequest.uri()}")
                                             }
                                             return httpRequest.endsWith("api/client/login") || httpRequest.endsWith("app/v2/time/heartbeat")
@@ -248,7 +242,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }).caCertFactory(cert).httpProxyExceptionHandle(object : HttpProxyExceptionHandle() {
                                 override fun beforeCatch(clientChannel: Channel, cause: Throwable) {
-                                    if (outRequestURI.isSelected) {
+                                    if (config.isOutError()) {
                                         cause.log()
                                     }
                                 }
@@ -259,13 +253,18 @@ class MainActivity : AppCompatActivity() {
                             host,
                             port
                         ).whenComplete { _, throwable ->
-                            if (throwable != null) {
-                                log("启动失败", LogType.ERROR)
-                                throwable.log()
-                            } else {
-                                log("启动成功 Host:${host} Port:${port}")
+                            runOnUiThread {
+                                if (throwable != null) {
+                                    log("启动失败", LogType.ERROR)
+                                    throwable.log()
+                                    startButton.visibility = View.VISIBLE
+                                } else {
+                                    log("启动成功 Host:${host} Port:${port}")
+                                    startButton.visibility = View.GONE
+                                }
                             }
                         }
+
                 }.start()
             } catch (t: Throwable) {
                 t.log()
@@ -307,9 +306,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun Throwable.log() {
-        if (cause != null) {
-            log(cause!!.stackTraceToString(), LogType.ERROR)
-        }
+        log(stackTraceToString(), LogType.ERROR)
     }
 
     fun FullHttpRequest.clear() {
@@ -324,5 +321,21 @@ class MainActivity : AppCompatActivity() {
     fun FullHttpResponse.setContent(msg: String) {
         content().clear()
         content().writeBytes(Unpooled.wrappedBuffer(msg.toByteArray()))
+    }
+
+    private fun SharedPreferences.isOutError(): Boolean {
+        return getBoolean("outError", false)
+    }
+
+    private fun SharedPreferences.isOutRequestURI(): Boolean {
+        return getBoolean("outRequestURI", false)
+    }
+
+    private fun SharedPreferences.getHost(): String {
+        return getString("host", "127.0.0.1")!!
+    }
+
+    private fun SharedPreferences.getPort(): Int {
+        return getInt("port", 25560)
     }
 }

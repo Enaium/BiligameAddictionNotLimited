@@ -51,47 +51,11 @@
                     android:text="捐赠" tools:ignore="ButtonStyle">
             </Button>
         </LinearLayout>
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
-            <CheckBox
-                    android:id="@+id/outError"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="输出错误日志"/>
-            <CheckBox
-                    android:id="@+id/outRequestURI"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="输出每个请求地址"/>
-        </LinearLayout>
 
-
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="Host:"
-                      android:textSize="24dp"/>
-            <EditText android:id="@+id/host"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:text="127.0.0.1"/>
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="Prot:"
-                      android:textSize="24dp"/>
-            <EditText android:id="@+id/port"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:text="25560"/>
-        </LinearLayout>
+        <Button android:id="@+id/setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="设置"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
