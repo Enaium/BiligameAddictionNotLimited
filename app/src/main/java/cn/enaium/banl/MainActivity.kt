@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             log("正在检测...")
             Thread {
                 try {
-                    val url = URL("https://api.github.com/repos/Enaium/BiligameAddictionNotLimited/releases")
+                    val url = URL("https://api.github.com/repositories/395314078/releases")
                     val json = String(url.openStream().readBytes())
                     val jsonArray = JSONArray(json)
                     val currentVersion = JSONObject(jsonArray[0].toString()).getString("tag_name")
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                             versionTextView.text = "最版本:${currentVersion}点击下载"
                             versionTextView.setTextColor(Color.RED)
                             versionTextView.setOnClickListener {
-                                openUrl("https://github.com/Enaium/BiligameAddictionNotLimited/releases")
+                                openUrl("https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/releases")
                             }
                         }
                     } else {
@@ -122,32 +122,34 @@ class MainActivity : AppCompatActivity() {
 
             log("正在保存...")
 
-
-
             Thread {
+                try {
+                    val outputStream = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val values = ContentValues()
+                        values.put(MediaStore.MediaColumns.DISPLAY_NAME, "ca.crt")
+                        values.put(MediaStore.MediaColumns.MIME_TYPE, "application/x-x509-ca-cert")
+                        values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                        val uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), values)
+                        contentResolver.openOutputStream(uri!!)
+                    } else {
+                        FileOutputStream("/storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/ca.crt")
+                    }
 
 
-                val outputStream = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val values = ContentValues()
-                    values.put(MediaStore.MediaColumns.DISPLAY_NAME, "ca.crt")
-                    values.put(MediaStore.MediaColumns.MIME_TYPE, "application/x-x509-ca-cert")
-                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/ca.crt")
-                    val uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), values)
-                    contentResolver.openOutputStream(uri!!)
-                } else {
-                    FileOutputStream("/storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/ca.crt")
+                    val br = BufferedReader(InputStreamReader(resources.assets.open("ca.crt")))
+                    var line: String?
+                    while (br.readLine().also { line = it } != null) {
+                        outputStream!!.write(line!!.toByteArray())
+                        outputStream.write("\n".toByteArray())
+                    }
+                    outputStream!!.close()
+                    log("保存成功(系统下载目录)")
+                } catch (t: Throwable) {
+                    log("保存失败", LogType.ERROR)
+                    t.log()
                 }
-
-
-                val br = BufferedReader(InputStreamReader(resources.assets.open("ca.crt")))
-                var line: String?
-                while (br.readLine().also { line = it } != null) {
-                    outputStream!!.write(line!!.toByteArray())
-                    outputStream.write("\n".toByteArray())
-                }
-                outputStream!!.close()
             }.start()
-            log("保存成功(系统下载目录)")
+
         }
 
         findViewById<Button>(R.id.setting).setOnClickListener {
@@ -194,7 +196,9 @@ class MainActivity : AppCompatActivity() {
                                             if (config.isOutRequestURI()) {
                                                 log("URI:${httpRequest.uri()}")
                                             }
-                                            return httpRequest.endsWith("api/client/login") || httpRequest.endsWith("app/v2/time/heartbeat")
+                                            return httpRequest.endsWith("api/client/login")
+                                                    || httpRequest.endsWith("app/v2/time/heartbeat")
+                                                    || httpRequest.endsWith("api/client/session.renewal")
                                         }
 
                                         override fun handleRequest(
@@ -209,7 +213,11 @@ class MainActivity : AppCompatActivity() {
                                             }
 
                                             if (httpRequest.endsWith("app/v2/time/heartbeat")) {
-                                                log("时间不计时成功")
+                                                log("时间不计时到时间防踢出成功")
+                                            }
+
+                                            if (httpRequest.endsWith("api/client/session.renewal")) {
+                                                log("登录不限制成功")
                                             }
                                         }
                                     })
@@ -220,7 +228,9 @@ class MainActivity : AppCompatActivity() {
                                             httpResponse: HttpResponse,
                                             pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
-                                            return httpRequest.endsWith("api/client/can_pay") || httpRequest.endsWith("api/client/user.info")
+                                            return httpRequest.endsWith("api/client/can_pay")
+                                                    || httpRequest.endsWith("api/client/user.info")
+                                                    || httpRequest.endsWith("api/client/login")
                                         }
 
                                         override fun handleResponse(
@@ -228,15 +238,16 @@ class MainActivity : AppCompatActivity() {
                                             httpResponse: FullHttpResponse,
                                             pipeline: HttpProxyInterceptPipeline
                                         ) {
-
                                             if (httpRequest.endsWith("api/client/can_pay")) {
                                                 httpResponse.setContent("""{code":0,"message":"ok","is_adult":1,"server_message":""}""")
                                                 log("充值不限制成功")
                                             }
 
                                             if (httpRequest.endsWith("api/client/user.info")) {
-                                                httpResponse.setContent("""{"realname_verified":1,"code":0,"uname":"不限制登录成功"}""")
+                                                httpResponse.setContent("""{"realname_verified":1,"code":0,"uname":"${config.getUname()}"}""")
                                             }
+
+
                                         }
                                     })
                                 }
@@ -337,5 +348,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun SharedPreferences.getPort(): Int {
         return getInt("port", 25560)
+    }
+
+    private fun SharedPreferences.getUname(): String {
+        return getString("uname", "不限制登录成功")!!
     }
 }

@@ -29,7 +29,12 @@
 
         <TextView android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:text="①安装证书②启动③设置WIFI代理"/>
+                  android:text="①安装证书②启动③设置WIFI代理"
+                  android:textSize="24dp"/>
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="不限制登录需要先正常登录一次,也就是说要等到周末20:00-21:00登录,登录后请不要再登录其他账号,也不要不开软件登录不然要从新开始"
+                  android:textSize="14dp"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
