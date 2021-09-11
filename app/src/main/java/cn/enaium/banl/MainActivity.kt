@@ -198,6 +198,7 @@ class MainActivity : AppCompatActivity() {
                                             }
                                             return httpRequest.endsWith("app/v2/time/heartbeat")
                                                     || httpRequest.endsWith("api/client/session.renewal")
+                                                    || httpRequest.endsWith("api/client/notice.list")
                                         }
 
                                         override fun handleRequest(
@@ -211,7 +212,8 @@ class MainActivity : AppCompatActivity() {
                                                 log("时间不计时到时间防踢出成功")
                                             }
 
-                                            if (httpRequest.endsWith("api/client/session.renewal")) {
+                                            if (httpRequest.endsWith("api/client/session.renewal")
+                                                || httpRequest.endsWith("api/client/notice.list")) {
                                                 log("登录不限制成功")
                                             }
                                         }
