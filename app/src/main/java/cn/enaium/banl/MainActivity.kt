@@ -196,8 +196,7 @@ class MainActivity : AppCompatActivity() {
                                             if (config.isOutRequestURI()) {
                                                 log("URI:${httpRequest.uri()}")
                                             }
-                                            return httpRequest.endsWith("api/client/login")
-                                                    || httpRequest.endsWith("app/v2/time/heartbeat")
+                                            return httpRequest.endsWith("app/v2/time/heartbeat")
                                                     || httpRequest.endsWith("api/client/session.renewal")
                                         }
 
@@ -207,10 +206,6 @@ class MainActivity : AppCompatActivity() {
                                         ) {
 
                                             httpRequest.clear()
-
-                                            if (httpRequest.endsWith("api/client/login")) {
-                                                log("登录不限制成功")
-                                            }
 
                                             if (httpRequest.endsWith("app/v2/time/heartbeat")) {
                                                 log("时间不计时到时间防踢出成功")
@@ -230,7 +225,6 @@ class MainActivity : AppCompatActivity() {
                                         ): Boolean {
                                             return httpRequest.endsWith("api/client/can_pay")
                                                     || httpRequest.endsWith("api/client/user.info")
-                                                    || httpRequest.endsWith("api/client/login")
                                         }
 
                                         override fun handleResponse(
