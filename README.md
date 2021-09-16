@@ -1,8 +1,7 @@
 # 😖BiligameAddictionNotLimited
 
 B站游戏防沉迷不限制
-
-[![GitHub all releases](https://img.shields.io/github/downloads/FuckAntiAddiction/BiligameAddictionNotLimited/total?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Enaium/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases)
+![GitHub Repo stars](https://img.shields.io/github/stars/FuckAntiAddiction/BiligameAddictionNotLimited?logo=github&style=for-the-badge)[![GitHub all releases](https://img.shields.io/github/downloads/FuckAntiAddiction/BiligameAddictionNotLimited/total?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases)![Android](https://img.shields.io/badge/Android-7-green?style=for-the-badge&logo=android)![GitHub](https://img.shields.io/github/license/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)
 
 ## 🚀功能
 
