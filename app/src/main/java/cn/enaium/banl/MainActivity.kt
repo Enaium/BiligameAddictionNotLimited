@@ -33,10 +33,7 @@ import com.github.monkeywie.proxyee.server.HttpProxyServer
 import com.github.monkeywie.proxyee.server.HttpProxyServerConfig
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
-import io.netty.handler.codec.http.FullHttpRequest
-import io.netty.handler.codec.http.FullHttpResponse
-import io.netty.handler.codec.http.HttpRequest
-import io.netty.handler.codec.http.HttpResponse
+import io.netty.handler.codec.http.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -207,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                                             httpRequest: HttpRequest, pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
                                             if (config.isOutRequestURI()) {
-                                                log("URI:${httpRequest.uri()}")
+                                                log("URI:${httpRequest.headers()[HttpHeaderNames.HOST]}${httpRequest.uri()}")
                                             }
                                             return httpRequest.endsWith("app/v2/time/heartbeat")
                                                     || httpRequest.endsWith("api/client/session.renewal")
