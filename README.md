@@ -20,13 +20,3 @@ B站游戏防沉迷不限制
 4. 在游戏运行的设备打开WIFI设置代理(Host和Port和启用时一致)
 
 不需用安装证书且安卓版本不受限制的版本[BiligameTimeHeartbeatIntercept](https://github.com/FuckAntiAddiction/BiligameTimeHeartbeatIntercept)仅支持到时间不被踢出游戏
-
-## 截图
-
-![Screenshot_1630501757](https://gitee.com/Enaium/imgbed/raw/master/Screenshot_1630501757.png)
-
-![Screenshot_1630501772](https://gitee.com/Enaium/imgbed/raw/master/Screenshot_1630501772.png)
-
-![Screenshot_1630501798](https://gitee.com/Enaium/imgbed/raw/master/Screenshot_1630501798.png)
-
-![Screenshot_1630502150](https://gitee.com/Enaium/imgbed/raw/master/Screenshot_1630502150.png)
