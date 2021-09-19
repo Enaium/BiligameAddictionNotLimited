@@ -19,15 +19,20 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.BiligameAddictionNotLimited">
+        <activity android:name=".InformationActivity"
+                  android:label="信息"
+                  android:parentActivityName=".MainActivity">
+        </activity>
         <activity
                 android:name=".SettingsActivity"
                 android:label="@string/title_activity_settings"
                 android:parentActivityName=".MainActivity">
         </activity>
-        <activity android:name=".MainActivity"
-                  android:screenOrientation="portrait"
-                  android:launchMode="singleTask"
-                  tools:ignore="LockedOrientationActivity">
+        <activity
+                android:name=".MainActivity"
+                android:launchMode="singleTask"
+                android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

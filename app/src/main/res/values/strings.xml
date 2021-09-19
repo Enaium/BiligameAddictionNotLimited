@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">B站游戏防沉迷不限制</string>
-    <string name="title_activity_settings">设置</string>
+    <string name="app_name">BiligameAddictionNotLimited</string>
+    <string name="title_activity_settings">Setting</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -13,6 +13,23 @@
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
+    <string name="attachment_summary_on" translatable="false">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="step">①Install certificate ②Start ③Set up WIFI proxy</string>
+    <string name="login">Not limit login needs to maintain automatic login, which means that you have to wait until
+        the weekend 20:00-21:00 to log in
+    </string>
+    <string name="information">Information</string>
+    <string name="saveCert">Save Certificate</string>
+    <string name="donate">Donate</string>
+    <string name="start">Start</string>
+    <string name="clearLog">Clear log</string>
+    <string name="version">Version:</string>
+    <string name="disclaimer">This software is free and open source software only for learning and communication</string>
+    <string name="log">Log:</string>
+    <string name="saveSetting">Save Setting</string>
+    <string name="infoUsername">Username prompted after login:</string>
+    <string name="username">Not limit login success</string>
+    <string name="outError">Out Error Log</string>
+    <string name="outRequestURL">Out Request URL</string>
 </resources>

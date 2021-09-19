@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="step">①Install certificate ②Start ③Set up WIFI proxy</string>
+    <string name="login">Unrestricted login needs to maintain automatic login, which means that you have to wait until
+        the weekend 20:00-21:00 to log in
+    </string>
+    <string name="information">Information</string>
+    <string name="saveCert">Save Certificate</string>
+    <string name="donate">Donate</string>
+    <string name="start">Start</string>
+    <string name="clearLog">Clear Log</string>
+    <string name="version">V:</string>
+    <string name="disclaimer">This software is free and open source software only for learning and communication</string>
+    <string name="log">Log:</string>
+    <string name="saveSetting">Save Setting</string>
+    <string name="username">Unrestricted login success</string>
+    <string name="outError">Out</string>
+    <string name="outRequestURL">Out Request URL</string>
+</resources>

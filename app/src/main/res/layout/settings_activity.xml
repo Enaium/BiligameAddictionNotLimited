@@ -13,27 +13,23 @@
                     android:id="@+id/outError"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="输出错误日志"/>
+                    android:text="@string/outError"/>
             <CheckBox
                     android:id="@+id/outRequestURI"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="输出每个请求地址"/>
+                    android:text="@string/outRequestURL"/>
         </LinearLayout>
 
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="登录后提示的用户名:"
-                      android:textSize="24dp"/>
-            <EditText android:id="@+id/uname"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:text="不限制登录成功"/>
-        </LinearLayout>
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/infoUsername"
+                  android:textSize="24dp"/>
+        <EditText android:id="@+id/uname"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="@string/username"/>
 
         <LinearLayout android:layout_width="match_parent"
                       android:layout_height="wrap_content"
@@ -62,7 +58,7 @@
         </LinearLayout>
         <Button
                 android:id="@+id/saveConfig"
-                android:text="保存设置"
+                android:text="@string/saveSetting"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
     </LinearLayout>
