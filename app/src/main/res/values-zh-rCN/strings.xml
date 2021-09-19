@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">B站游戏防沉迷不限制</string>
     <string name="step">①安装证书②启动③设置WIFI代理</string>
-    <string name="login">不限制登录需要保持自动登录,也就是说要等到周末20:00-21:00登录</string>
     <string name="information">信息</string>
     <string name="saveCert">保存证书</string>
     <string name="donate">捐赠</string>
@@ -19,5 +18,6 @@
     <string name="port">端口号:</string>
     <string name="infoUsername">登录后提示的用户名</string>
     <string name="title_activity_settings">设置</string>
-    <string name="check_for_updates_when_opening_the_program">Check for updates when opening the program</string>
+    <string name="check_for_updates_when_opening_the_program">在程序打开时检测更新</string>
+    <string name="login">不限制登录需要保持自动登录</string>
 </resources>

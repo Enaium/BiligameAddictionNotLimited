@@ -16,9 +16,7 @@
     <string name="attachment_summary_on" translatable="false">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="step">①Install certificate ②Start ③Set up WIFI proxy</string>
-    <string name="login">Not limit login needs to maintain automatic login, which means that you have to wait until
-        the weekend 20:00-21:00 to log in
-    </string>
+    <string name="login">Not limit login Need to keep automatic login</string>
     <string name="information">Information</string>
     <string name="saveCert">Save Certificate</string>
     <string name="donate">Donate</string>
