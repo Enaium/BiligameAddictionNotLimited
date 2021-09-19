@@ -32,4 +32,6 @@
     <string name="username">Not limit login success</string>
     <string name="outError">Out Error Log</string>
     <string name="outRequestURL">Out Request URL</string>
+    <string name="host">Host:</string>
+    <string name="port">Port:</string>
 </resources>

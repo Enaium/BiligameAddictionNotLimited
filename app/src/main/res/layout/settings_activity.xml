@@ -36,7 +36,7 @@
                       android:orientation="horizontal">
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="Host:"
+                      android:text="@string/host"
                       android:textSize="24dp"/>
             <EditText android:id="@+id/host"
                       android:layout_width="match_parent"
@@ -49,7 +49,7 @@
                       android:orientation="horizontal">
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="Prot:"
+                      android:text="@string/port"
                       android:textSize="24dp"/>
             <EditText android:id="@+id/port"
                       android:layout_width="match_parent"

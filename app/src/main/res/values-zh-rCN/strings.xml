@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">B站游戏防沉迷不限制</string>
-    <string name="title_activity_settings">设置</string>
     <string name="step">①安装证书②启动③设置WIFI代理</string>
     <string name="login">不限制登录需要保持自动登录,也就是说要等到周末20:00-21:00登录</string>
     <string name="information">信息</string>
@@ -16,4 +15,8 @@
     <string name="username">不限制登录成功</string>
     <string name="outError">输出错误日志</string>
     <string name="outRequestURL">输出每个请求地址</string>
+    <string name="host">主机名:</string>
+    <string name="port">端口号:</string>
+    <string name="infoUsername">登录后提示的用户名</string>
+    <string name="title_activity_settings">设置</string>
 </resources>

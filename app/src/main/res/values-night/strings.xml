@@ -16,4 +16,5 @@
     <string name="username">Unrestricted login success</string>
     <string name="outError">Out</string>
     <string name="outRequestURL">Out Request URL</string>
+    <string name="host">Host:</string>
 </resources>
