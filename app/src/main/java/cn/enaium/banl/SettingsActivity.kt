@@ -41,6 +41,13 @@ class SettingsActivity : AppCompatActivity() {
             configEdit.apply()
         }
 
+        val openCheckUpdate = findViewById<CheckBox>(R.id.openCheckUpdate)
+        openCheckUpdate.isChecked = config.getBoolean("openCheckUpdate", true)
+        openCheckUpdate.setOnCheckedChangeListener { _, selected ->
+            configEdit.putBoolean("openCheckUpdate", selected)
+            configEdit.apply()
+        }
+
         findViewById<Button>(R.id.saveConfig).setOnClickListener {
             if (!hostEditText.text.matches(Regex("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"))) {
                 Toast.makeText(this, "请输入有效Host", Toast.LENGTH_SHORT).show()

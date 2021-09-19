@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         val versionName = packageManager.getPackageInfo(packageName, 0).versionName
         versionTextView.append(versionName)
 
-        versionTextView.setOnClickListener {
+        fun checkUpdate() {
             log("正在检测...")
             Thread {
                 try {
@@ -94,6 +94,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         val config = getSharedPreferences("config", MODE_PRIVATE)
+
+        if (config.isOpenCheckUpdate()) {
+            checkUpdate()
+        }
+
+
+        versionTextView.setOnClickListener {
+            checkUpdate()
+        }
 
         findViewById<Button>(R.id.github).setOnClickListener {
             openUrl("https://github.com/Enaium")
@@ -217,7 +226,8 @@ class MainActivity : AppCompatActivity() {
                                             }
 
                                             if (httpRequest.endsWith("api/client/session.renewal")
-                                                || httpRequest.endsWith("api/client/notice.list")) {
+                                                || httpRequest.endsWith("api/client/notice.list")
+                                            ) {
                                                 log("登录不限制成功")
                                             }
                                         }
@@ -352,5 +362,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun SharedPreferences.getUname(): String {
         return getString("uname", "不限制登录成功")!!
+    }
+
+    private fun SharedPreferences.isOpenCheckUpdate(): Boolean {
+        return getBoolean("openCheckUpdate", true)
     }
 }

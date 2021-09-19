@@ -19,4 +19,5 @@
     <string name="port">端口号:</string>
     <string name="infoUsername">登录后提示的用户名</string>
     <string name="title_activity_settings">设置</string>
+    <string name="check_for_updates_when_opening_the_program">打开程序时检测更新</string>
 </resources>

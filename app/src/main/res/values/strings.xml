@@ -34,4 +34,5 @@
     <string name="outRequestURL">Out Request URL</string>
     <string name="host">Host:</string>
     <string name="port">Port:</string>
+    <string name="check_for_updates_when_opening_the_program">Check for updates when opening the program</string>
 </resources>
