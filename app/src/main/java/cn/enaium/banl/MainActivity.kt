@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                                             if (config.isOutRequestURI()) {
                                                 log("URI:${httpRequest.headers()[HttpHeaderNames.HOST]}${httpRequest.uri()}")
                                             }
-                                            return httpRequest.end("app/v2/time/heartbeat")
+                                            return httpRequest.end("time/heartbeat")
                                                     || httpRequest.end("api/client/session.renewal")
                                                     || httpRequest.end("api/client/notice.list")
                                         }
@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity() {
 
                                             httpRequest.clear()
 
-                                            if (httpRequest.end("app/v2/time/heartbeat")) {
+                                            if (httpRequest.end("time/heartbeat")) {
                                                 log("时间不计时到时间防踢出成功")
                                             }
 
@@ -255,8 +255,6 @@ class MainActivity : AppCompatActivity() {
                                                 || httpRequest.has("api/external/user.token.oauth.login")) {
                                                 httpResponse.setContent("""{"realname_verified":1,"code":0,"uname":"${config.getUname()}"}""")
                                             }
-
-
                                         }
                                     })
                                 }
