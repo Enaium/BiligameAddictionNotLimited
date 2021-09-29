@@ -206,9 +206,9 @@ class MainActivity : AppCompatActivity() {
                                             if (config.isOutRequestURI()) {
                                                 log("URI:${httpRequest.headers()[HttpHeaderNames.HOST]}${httpRequest.uri()}")
                                             }
-                                            return httpRequest.endsWith("app/v2/time/heartbeat")
-                                                    || httpRequest.endsWith("api/client/session.renewal")
-                                                    || httpRequest.endsWith("api/client/notice.list")
+                                            return httpRequest.end("app/v2/time/heartbeat")
+                                                    || httpRequest.end("api/client/session.renewal")
+                                                    || httpRequest.end("api/client/notice.list")
                                         }
 
                                         override fun handleRequest(
@@ -218,12 +218,12 @@ class MainActivity : AppCompatActivity() {
 
                                             httpRequest.clear()
 
-                                            if (httpRequest.endsWith("app/v2/time/heartbeat")) {
+                                            if (httpRequest.end("app/v2/time/heartbeat")) {
                                                 log("时间不计时到时间防踢出成功")
                                             }
 
-                                            if (httpRequest.endsWith("api/client/session.renewal")
-                                                || httpRequest.endsWith("api/client/notice.list")
+                                            if (httpRequest.end("api/client/session.renewal")
+                                                || httpRequest.end("api/client/notice.list")
                                             ) {
                                                 log("登录不限制成功")
                                             }
@@ -236,8 +236,9 @@ class MainActivity : AppCompatActivity() {
                                             httpResponse: HttpResponse,
                                             pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
-                                            return httpRequest.endsWith("api/client/can_pay")
-                                                    || httpRequest.endsWith("api/client/user.info")
+                                            return httpRequest.end("api/client/can_pay")
+                                                    || httpRequest.end("api/client/user.info")
+                                                    || httpRequest.has("api/external/user.token.oauth.login")//新版登录信息
                                         }
 
                                         override fun handleResponse(
@@ -245,12 +246,13 @@ class MainActivity : AppCompatActivity() {
                                             httpResponse: FullHttpResponse,
                                             pipeline: HttpProxyInterceptPipeline
                                         ) {
-                                            if (httpRequest.endsWith("api/client/can_pay")) {
+                                            if (httpRequest.end("api/client/can_pay")) {
                                                 httpResponse.setContent("""{code":0,"message":"ok","is_adult":1,"server_message":""}""")
                                                 log("充值不限制成功")
                                             }
 
-                                            if (httpRequest.endsWith("api/client/user.info")) {
+                                            if (httpRequest.end("api/client/user.info")
+                                                || httpRequest.has("api/external/user.token.oauth.login")) {
                                                 httpResponse.setContent("""{"realname_verified":1,"code":0,"uname":"${config.getUname()}"}""")
                                             }
 
@@ -332,9 +334,14 @@ class MainActivity : AppCompatActivity() {
         content().clear()
     }
 
-    fun HttpRequest.endsWith(text: String): Boolean {
+    fun HttpRequest.end(text: String): Boolean {
         return uri().endsWith(text)
     }
+
+    fun HttpRequest.has(text: String): Boolean {
+        return uri().contains(text)
+    }
+
 
     fun FullHttpResponse.setContent(msg: String) {
         content().clear()
