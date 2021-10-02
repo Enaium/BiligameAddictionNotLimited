@@ -209,13 +209,14 @@ class MainActivity : AppCompatActivity() {
                                             return httpRequest.end("time/heartbeat")
                                                     || httpRequest.end("api/client/session.renewal")
                                                     || httpRequest.end("api/client/notice.list")
+                                                    || httpRequest.end("api/client/user.info")
+                                                    || httpRequest.has("user.token.oauth.login")//新版登录信息
                                         }
 
                                         override fun handleRequest(
                                             httpRequest: FullHttpRequest,
                                             pipeline: HttpProxyInterceptPipeline
                                         ) {
-
                                             httpRequest.clear()
 
                                             if (httpRequest.end("time/heartbeat")) {
@@ -237,8 +238,6 @@ class MainActivity : AppCompatActivity() {
                                             pipeline: HttpProxyInterceptPipeline
                                         ): Boolean {
                                             return httpRequest.end("api/client/can_pay")
-                                                    || httpRequest.end("api/client/user.info")
-                                                    || httpRequest.has("api/external/user.token.oauth.login")//新版登录信息
                                         }
 
                                         override fun handleResponse(
@@ -249,11 +248,6 @@ class MainActivity : AppCompatActivity() {
                                             if (httpRequest.end("api/client/can_pay")) {
                                                 httpResponse.setContent("""{code":0,"message":"ok","is_adult":1,"server_message":""}""")
                                                 log("充值不限制成功")
-                                            }
-
-                                            if (httpRequest.end("api/client/user.info")
-                                                || httpRequest.has("api/external/user.token.oauth.login")) {
-                                                httpResponse.setContent("""{"realname_verified":1,"code":0,"uname":"${config.getUname()}"}""")
                                             }
                                         }
                                     })
@@ -360,10 +354,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun SharedPreferences.getPort(): Int {
         return getInt("port", 25560)
-    }
-
-    private fun SharedPreferences.getUname(): String {
-        return getString("uname", "不限制登录成功")!!
     }
 
     private fun SharedPreferences.isOpenCheckUpdate(): Boolean {

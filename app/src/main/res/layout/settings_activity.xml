@@ -26,16 +26,6 @@
                     android:text="@string/check_for_updates_when_opening_the_program"/>
         </LinearLayout>
 
-
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="@string/infoUsername"
-                  android:textSize="24dp"/>
-        <EditText android:id="@+id/uname"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="@string/username"/>
-
         <LinearLayout android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:orientation="horizontal">
