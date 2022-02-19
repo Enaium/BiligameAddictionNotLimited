@@ -14,7 +14,7 @@ B站游戏防沉迷不限制
 
 ✅到时间不被踢出游戏
 
-✅每次100元/每月400元充值不限制
+❌每次100元/每月400元充值不限制(已被修复)
 
 ## 使用方法[WIKI](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/wiki)
 
