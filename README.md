@@ -2,6 +2,14 @@
 
 B站游戏防沉迷不限制
 
+# R.I.P
+
+由于防沉迷非常严密，此项目已经失效，验证都在服务器内，所以除了单机游戏，都将无法绕过
+
+不过，登录不被踢出的方法还可以继续使用
+
+# R.I.P
+
 [![GitHub Repo stars](https://img.shields.io/github/stars/FuckAntiAddiction/BiligameAddictionNotLimited?logo=github&style=for-the-badge)](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/stargazers) [![GitHub all releases](https://img.shields.io/github/downloads/FuckAntiAddiction/BiligameAddictionNotLimited/total?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases) ![Android](https://img.shields.io/badge/Android-7-green?style=for-the-badge&logo=android) [![GitHub license](https://img.shields.io/github/license/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/blob/master/LICENSE) [![GitHub Discussions](https://img.shields.io/github/discussions/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/discussions)
 
 ## Xposed模块
