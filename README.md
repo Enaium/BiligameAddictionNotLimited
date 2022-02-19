@@ -4,6 +4,10 @@ B站游戏防沉迷不限制
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/FuckAntiAddiction/BiligameAddictionNotLimited?logo=github&style=for-the-badge)](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/stargazers) [![GitHub all releases](https://img.shields.io/github/downloads/FuckAntiAddiction/BiligameAddictionNotLimited/total?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/Enaium/BiligameAddictionNotLimited/releases) ![Android](https://img.shields.io/badge/Android-7-green?style=for-the-badge&logo=android) [![GitHub license](https://img.shields.io/github/license/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/blob/master/LICENSE) [![GitHub Discussions](https://img.shields.io/github/discussions/FuckAntiAddiction/BiligameAddictionNotLimited?style=for-the-badge)](https://github.com/FuckAntiAddiction/BiligameAddictionNotLimited/discussions)
 
+## Xposed模块
+
+[BiligameBypass](https://github.com/FuckAntiAddiction/BiligameBypass)
+
 ## 🚀功能
 
 ❌周末20:00到21:00登录不限制(已被修复还没找到解决方法)
